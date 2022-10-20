@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import pygame as pg
 
 # Colors
@@ -13,11 +13,37 @@ pg.display.set_caption("Spritesheet")
 clock = pg.time.Clock()
 FPS = 60
 
-# Images
-walk_1 = pg.image.load("assets/1 Enemies/1/Walk.png").convert_alpha()
-scale = 2
-# walk_1 = pg.transform.scale(walk_1, (288*scale, 48*scale))
+# Spritesheet class
+class Spritesheet():
+    """Class for utilizing spritesheets"""
+    def __init__(self, sheet_image, frame_size, scale):
+        """Initialize the basic properties of the spritesheet.
+        Args:
+            sheet_image: path to the spritesheet.png.
+            frame_size: a sequence of 2 ints representing the width and height
+                        of a single frame in the sheet.
+            scale: an int to which the frame will be scaled.
+        """
+        self.sheet = pg.image.load(sheet_image).convert_alpha()
+        self.frame_w = frame_size[0]
+        self.frame_h = frame_size[1]
+        self.scale = scale
 
+    def get_frame(self, frame):
+        image = pg.Surface((self.frame_w, self.frame_h))
+        
+        image.blit(self.sheet, (0, 0), 
+            (frame*self.frame_w, 0, self.frame_w, self.frame_h))
+        
+        image = pg.transform.scale(image, 
+            (self.frame_w*self.scale, self.frame_h*self.scale))
+
+        return image
+
+
+walk_sheet = os.path.join('assets', '1_Enemies', '1', 'Walk.png')
+sheet_1 = Spritesheet(walk_sheet, [48, 48], 2)
+frame_0 = sheet_1.get_frame(5)
 
 # Game loop
 def main():
@@ -31,7 +57,7 @@ def main():
 
         # Update / Draw
         WIN.fill(PURPLE)
-        WIN.blit(walk_1, (0, 200))
+        WIN.blit(frame_0, (0, 150))
 
 
         # Update display
