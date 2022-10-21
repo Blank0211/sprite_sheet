@@ -13,7 +13,7 @@ pg.display.set_caption("Spritesheet")
 clock = pg.time.Clock()
 FPS = 60
 
-# Spritesheet class
+# Sprites
 class Spritesheet():
     """Class for utilizing spritesheets"""
     def __init__(self, sheet_image, frame_size, scale=0, cols=0, rows=0):
@@ -66,12 +66,46 @@ class Spritesheet():
         self.count += 1
         
         return self.get_frame(frame_num)
-        
+
+
+class Player(pg.sprite.Sprite):
+    def __init__(self, size, pos, sheet_file, **sheet_args):
+        super().__init__()
+        # Animation & Frames
+        if sheet_file:
+            self.sheet = Spritesheet(sheet_file, **sheet_args) 
+            self.frames = [frame for frame in self.sheet]
+        self.current_frame = 0
+        self.is_animate = False
+
+        # Appearance & Body
+        self.image = self.frames[self.current_frame]
+        self.rect = self.image.get_rect(topleft=pos)
+
+    def update(self):
+        keys = pg.key.get_pressed()
+        if keys[pg.K_d]:
+            self.is_animate = True
+
+        if self.is_animate:
+            self.current_frame += 0.2
+            
+            if self.current_frame >= len(self.frames):
+                self.current_frame = 0
+                self.is_animate = False
+
+            self.image = self.frames[int(self.current_frame)]
+
+
+    def draw(self, win):
+        win.blit(self.image, self.rect)
+
 
 walk_sheet = os.path.join('assets', '1_Enemies', '1', 'Walk.png')
-sheet_1 = Spritesheet(walk_sheet, [48, 48], 2, cols=6)
-frm_list = [frame for frame in sheet_1]
-frame_0 = frm_list[3]
+# sheet_1 = Spritesheet(walk_sheet, [48, 48], 2, cols=6)
+p1 = Player([48, 48], [0, 250], walk_sheet, 
+        frame_size=[48, 48], scale=2, cols=6)
+
 
 
 # Game loop
@@ -83,11 +117,15 @@ def main():
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 running = False
+            if ev.type == pg.KEYDOWN:
+                if ev.key == pg.K_d:
+                    p1.is_animate = True
 
         # Update / Draw
-        WIN.fill(PURPLE)
-        WIN.blit(frame_0, (0, 250))
+        p1.update()
 
+        WIN.fill(PURPLE)
+        p1.draw(WIN)
 
         # Update display
         pg.display.flip()
