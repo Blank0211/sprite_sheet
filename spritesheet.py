@@ -22,7 +22,7 @@ class Spritesheet():
             sheet_image: path to the spritesheet.png.
             frame_size: a sequence of 2 ints representing the width and height
                         of a single frame.
-            scale: (Optional) used to scale the frame.
+            scale: (Optional) used to scale up the frame.
             cols / rows: Number of columns and rows in the sheet
         """
         self.sheet = pg.image.load(sheet_image).convert_alpha()
@@ -36,7 +36,9 @@ class Spritesheet():
             self.rows = rows
 
     def get_frame(self, frame_num: int):
-        """Return the specified frame from the sheet"""
+        """Return the specified frame from the sheet.
+        Note: Frame starts from 0.
+        """
         frame = pg.Surface((self.frm_w, self.frm_h))
         frame.set_colorkey((0, 0, 0))
         
@@ -56,6 +58,7 @@ class Spritesheet():
         return self
 
     def __next__(self):
+        # End if count exceeds total frames
         if self.count > (self.cols-1):
             raise StopIteration
         
@@ -67,8 +70,9 @@ class Spritesheet():
 
 walk_sheet = os.path.join('assets', '1_Enemies', '1', 'Walk.png')
 sheet_1 = Spritesheet(walk_sheet, [48, 48], 2, cols=6)
-frm_list = [sheet for sheet in sheet_1]
-frame_0 = frm_list[4]
+frm_list = [frame for frame in sheet_1]
+frame_0 = frm_list[3]
+
 
 # Game loop
 def main():
