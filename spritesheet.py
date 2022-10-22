@@ -79,13 +79,17 @@ class Spritesheet():
     def __iter__(self):
         """See __next__."""
         self.count = 0
+        self.rows = self.sheet.get_height() // self.frm_h
         return self
 
     def __next__(self):
-        """Iterates over each frame/sprite in the sheet and retruns it."""
+        """Iterates over each frame/sprite in the sheet and retruns it.
+        Note: This will not work if the frames/sprites have variable
+              width and height.
+        """
 
         # End if count exceeds total frames
-        if self.count > (self.cols-1):
+        if self.count > (self.cols*self.rows)-1:
             raise StopIteration
         
         frame_num = self.count
@@ -99,6 +103,7 @@ sheet_1 = Spritesheet(walk_sheet, [48, 48], cols=6, scale=2)
 frm_list = [frame for frame in sheet_1]
 frame_0 = sheet_1.image_at(pg.Rect(48, 0, 48, 48))
 print(help(Spritesheet))
+
 # Game loop
 def main():
     pg.init()
