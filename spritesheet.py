@@ -16,11 +16,6 @@ FPS = 60
 # Spritesheet class
 class Spritesheet():
     """Class for utilizing spritesheets
-    Methods:
-        get_frame: Returns a specific frame from the sheet, calculates the
-                   x y position using the frame_num argument.
-        image_at: Same as get_frame, but takes a pygame.Rect as an arguement
-                  to locate the frame.
     """
     def __init__(self, sheet_image, frame_size, cols, rows=0, scale=0):
         """Initializes basic properties of the spritesheet.
@@ -42,8 +37,10 @@ class Spritesheet():
             self.rows = rows
 
     def get_frame(self, frame_num: int):
-        """Return the specified frame/sprite from the sheet.
-        Note: Frame starts from 0.
+        """Returns a specific frame from the sheet.
+        Calculates x y position using frame_num arguement.
+        
+        Note: First frame starts from 0.
         """
         # Calculate position of frame
         x = (frame_num%self.cols) * self.frm_w
@@ -62,6 +59,9 @@ class Spritesheet():
         return frame
 
     def image_at(self, rect):
+        """Similar to get_frame method.
+        Takes a pygame.Rect as an arguement to locate the frame.
+        """
         x, y = rect.x, rect.y
         w, h = rect.width, rect.height
 
@@ -77,10 +77,13 @@ class Spritesheet():
         return frame
 
     def __iter__(self):
+        """See __next__."""
         self.count = 0
         return self
 
     def __next__(self):
+        """Iterates over each frame/sprite in the sheet and retruns it."""
+
         # End if count exceeds total frames
         if self.count > (self.cols-1):
             raise StopIteration
@@ -95,7 +98,7 @@ walk_sheet = os.path.join('assets', '1_Enemies', '1', 'Walk.png')
 sheet_1 = Spritesheet(walk_sheet, [48, 48], cols=6, scale=2)
 frm_list = [frame for frame in sheet_1]
 frame_0 = sheet_1.image_at(pg.Rect(48, 0, 48, 48))
-
+print(help(Spritesheet))
 # Game loop
 def main():
     pg.init()
