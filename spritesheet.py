@@ -15,8 +15,14 @@ FPS = 60
 
 # Spritesheet class
 class Spritesheet():
-    """Class for utilizing spritesheets"""
-    def __init__(self, sheet_image, frame_size, scale=0, cols=0, rows=0):
+    """Class for utilizing spritesheets
+    Methods:
+        get_frame: Returns a specific frame from the sheet, calculates the
+                   x y position using the frame_num argument.
+        image_at: Same as get_frame, but takes a pygame.Rect as an arguement
+                  to locate the frame.
+    """
+    def __init__(self, sheet_image, frame_size, cols, rows=0, scale=0):
         """Initialize the basic properties of the spritesheet.
         Args:
             sheet_image: path to the spritesheet.png.
@@ -39,12 +45,14 @@ class Spritesheet():
         """Return the specified frame from the sheet.
         Note: Frame starts from 0.
         """
-        frame = pg.Surface((self.frm_w, self.frm_h))
-        frame.set_colorkey((0, 0, 0))
+        # Calculate position of frame
+        x = (frame_num%self.cols) * self.frm_w
+        y = (frame_num//self.cols) * self.frm_h
         
-        # Blit frame on surface
-        frame.blit(self.sheet, (0, 0), 
-            (frame_num*self.frm_w, 0, self.frm_w, self.frm_h))
+        # Setup surface to blit frame on
+        frame = pg.Surface((self.frm_w, self.frm_h)).convert()
+        frame.blit(self.sheet, (0, 0), (x, y, self.frm_w, self.frm_h))
+        frame.set_colorkey((0, 0, 0))
         
         # Scale up frame
         if self.scale:
@@ -69,10 +77,9 @@ class Spritesheet():
         
 
 walk_sheet = os.path.join('assets', '1_Enemies', '1', 'Walk.png')
-sheet_1 = Spritesheet(walk_sheet, [48, 48], 2, cols=6)
+sheet_1 = Spritesheet(walk_sheet, [48, 48], cols=6, scale=2)
 frm_list = [frame for frame in sheet_1]
 frame_0 = frm_list[3]
-
 
 # Game loop
 def main():
