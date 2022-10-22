@@ -23,13 +23,13 @@ class Spritesheet():
                   to locate the frame.
     """
     def __init__(self, sheet_image, frame_size, cols, rows=0, scale=0):
-        """Initialize the basic properties of the spritesheet.
+        """Initializes basic properties of the spritesheet.
         Args:
             sheet_image: path to the spritesheet.png.
             frame_size: a sequence of 2 ints representing the width and height
-                        of a single frame.
-            scale: (Optional) used to scale up the frame.
-            cols / rows: Number of columns and rows in the sheet
+                        of a single frame/sprite.
+            scale: (Optional) used to scale up the frame/sprite.
+            cols & rows: Number of columns and rows in the sheet
         """
         self.sheet = pg.image.load(sheet_image).convert_alpha()
         self.frm_w = frame_size[0]
@@ -42,7 +42,7 @@ class Spritesheet():
             self.rows = rows
 
     def get_frame(self, frame_num: int):
-        """Return the specified frame from the sheet.
+        """Return the specified frame/sprite from the sheet.
         Note: Frame starts from 0.
         """
         # Calculate position of frame
@@ -58,6 +58,21 @@ class Spritesheet():
         if self.scale:
             frame = pg.transform.scale(frame, 
                 (self.frm_w*self.scale, self.frm_h*self.scale))
+
+        return frame
+
+    def image_at(self, rect):
+        x, y = rect.x, rect.y
+        w, h = rect.width, rect.height
+
+        # Setup surface and blit frame on it
+        frame = pg.Surface((w, h)).convert()
+        frame.blit(self.sheet, (0, 0), (x, y, w, h))
+        frame.set_colorkey((0, 0, 0))
+
+        # Scale up frame
+        if self.scale:
+            frame = pg.transform.scale(frame, (w*self.scale, h*self.scale))
 
         return frame
 
@@ -79,7 +94,7 @@ class Spritesheet():
 walk_sheet = os.path.join('assets', '1_Enemies', '1', 'Walk.png')
 sheet_1 = Spritesheet(walk_sheet, [48, 48], cols=6, scale=2)
 frm_list = [frame for frame in sheet_1]
-frame_0 = frm_list[3]
+frame_0 = sheet_1.image_at(pg.Rect(48, 0, 48, 48))
 
 # Game loop
 def main():
